@@ -6,8 +6,8 @@ const { getAllProducts, getProductByName, getProductsByCategory, createProduct, 
 
 
 router.get('/',protectRoute,getAllProducts);
-router.get('/productsName',protectRoute,getProductByName);
-router.get('/productCategory',protectRoute,getProductsByCategory);
+router.get('/search/:name',protectRoute,getProductByName);
+router.get('/category/:category',protectRoute,getProductsByCategory);
 
 router.post('/create-product',protectAdminRoute,createProduct)
 

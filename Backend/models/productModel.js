@@ -73,18 +73,30 @@ const updateProduct = async (id, updateFields) => {
     }
 };
 
-const deleteAllProducts = async () => {
-    const [result] = await db.query('DELETE FROM products');
-    return result;
+const deleteAllProducts = async (req, res) => {
+    try {
+        const result = await products.deleteAllProducts();
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: "No products to delete" });
+        }
+
+        res.status(200).json({ message: "All products deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting all products:", error);
+        res.status(500).json({ error: "Error deleting all products" });
+    }
 };
+
 
 
 module.exports = {
     getAllProducts,
     getProductByName,
-    getProductsByCategory, 
+    getProductsByCategory,
     createProduct,
     deleteProduct,
-    updateProduct, 
+    updateProduct,
     deleteAllProducts
 };
+

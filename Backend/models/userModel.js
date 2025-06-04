@@ -57,10 +57,21 @@ const loginUser = async (email, password) => {
     throw error;
   }
 };
+// delete a user from db by admin
+const deleteUserByAdmin = async (userId) => {
+  try {
+    const [result] = await db.query('DELETE FROM users WHERE id = ?', [userId]);
+    return result.affectedRows > 0;
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    throw error;
+  }
+};
 
 
 module.exports = {
   getAllUsers,
   createUser,
-  loginUser
+  loginUser,
+  deleteUserByAdmin
 };
