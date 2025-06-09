@@ -1,56 +1,44 @@
-const db = require('../config/connect_DB');
+const db= require("../config/connect_DB");
 
-// Create an order
-const createOrder = async (orderData) => {
-  const { user_id, total_amount, status } = orderData;
-  const sql = 'INSERT INTO orders (user_id, total_amount, status) VALUES (?, ?, ?)';
-  const [result] = await db.query(sql, [user_id, total_amount, status]);
-  return { id: result.insertId, ...orderData };
-};
-
-// Get order by ID
-const getOrderById = async (id) => {
-  const sql = 'SELECT * FROM orders WHERE id = ?';
-  const [rows] = await db.query(sql, [id]);
+const createOrder= async(orderData)=>{
+  const sql=' INSERT INTO orders (user_id, total_amount) VALUES (?, ?)';
+  const [result]= await db.execute(sql,[userId,totalAmount]);
+  return result.insertId;
+}
+const getUserOrders=async(userId)=>{
+  const sql ='SELECT * FROM orders WHEN user_id= ?';
+  const [rows]= await db.execute(sql, [userId]);
   return rows;
 };
 
-// Get orders by user ID
-const getOrderByUser = async (userId) => {
+const getOrderById=async(orderId)=>{
+  const sql='SELECT * FROM orders WHERE id= ?';
+  const [rows]= await db.execute(sql, [orderId]);
+  return rows[0];
+};
+
+const updateOrderStatus=async(orderId, status)=>{
+  const sql='UPDATE orders SET status= ? WHERE id= ?';
+  const [result]= await db.execute(sql, [status, orderId]);
+  return result.affectedRows > 0;
+};
+
+const deleteOrder=async(orderId)=>{
+  const sql='DELETE FROM orders WHERE id= ?';
+  const [result]= await db.execute(sql, [orderId]);
+  return result.affectedRows > 0;
+};
+const getAllOrders=async(userId)=>{
   const sql = 'SELECT * FROM orders WHERE user_id = ?';
-  const [rows] = await db.query(sql, [userId]);
+  const [rows] = await db.execute(sql, [userId]);
   return rows;
-};
+}
 
-// Get all orders (admin only)
-const getAllOrders = async () => {
-   const sql = `
-     SELECT 
-       o.id AS order_id,
-       o.user_id,
-       u.name AS user_name,
-       o.total_amount,
-       o.status,
-       o.created_at
-     FROM orders o
-     JOIN users u ON o.user_id = u.id
-     ORDER BY o.created_at DESC
-   `;
-   const [rows] = await db.query(sql);
-   return rows;
- };
-
- // Update order status
-const updateOrderStatus = async (orderId, status) => {
-   const sql = 'UPDATE orders SET status = ? WHERE id = ?';
-   const [result] = await db.query(sql, [status, orderId]);
-   return result;
- };
- 
-
-module.exports = {
+module.exports={
   createOrder,
+  getUserOrders,
   getOrderById,
-  getOrderByUser,
+  updateOrderStatus,
+  deleteOrder,
   getAllOrders
 };
